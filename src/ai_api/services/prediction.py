@@ -3,8 +3,9 @@ from PIL import Image
 from fastapi import HTTPException
 from ai_model.models.model import get_model
 from ai_api.services.preprocessing import preprocess_image
+import os
+from pathlib import Path
 
-# DR stages mapping
 DR_STAGES = {
     0: "No DR",
     1: "Mild Non-proliferative DR",
@@ -16,6 +17,15 @@ DR_STAGES = {
 def get_model_instance():
     """Get model instance for prediction."""
     model = get_model()
+    model_path = Path(__file__).parent.parent.parent / "models" / "best_model.pth"
+    
+    if not model_path.exists():
+        raise HTTPException(
+            status_code=500,
+            detail="Model file not found. Please ensure the model is trained and saved."
+        )
+    checkpoint = torch.load(model_path, map_location=torch.device('cpu'))
+    model.load_state_dict(checkpoint['model_state_dict'])
     model.eval()
     return model
 
@@ -33,20 +43,13 @@ def predict(image: Image.Image) -> dict:
         HTTPException: If prediction fails
     """
     try:
-        # Get model instance
         model = get_model_instance()
-        
-        # Preprocess image
         image_tensor = preprocess_image(image)
-        
-        # Get prediction
         with torch.no_grad():
             outputs = model(image_tensor)
             probabilities = torch.softmax(outputs, dim=1)[0]
             predicted_stage = torch.argmax(probabilities).item()
             confidence = probabilities[predicted_stage].item()
-        
-        # Format probabilities
         prob_dict = {
             DR_STAGES[i]: float(prob)
             for i, prob in enumerate(probabilities)

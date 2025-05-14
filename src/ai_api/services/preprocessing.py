@@ -18,21 +18,13 @@ def preprocess_image(image: Image.Image) -> torch.Tensor:
         HTTPException: If preprocessing fails
     """
     try:
-        # Convert image to RGB if needed
         if image.mode != 'RGB':
             image = image.convert('RGB')
-            
-        # Convert PIL Image to numpy array
         image_np = np.array(image)
-        
-        # Apply transforms with validation phase
         transform = get_transforms(phase='val')
         image_tensor = transform(image=image_np)["image"]
-        
-        # Move tensor to CUDA if available
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         image_tensor = image_tensor.to(device)
-        
         return image_tensor.unsqueeze(0)  # Add batch dimension
     except Exception as e:
         raise HTTPException(

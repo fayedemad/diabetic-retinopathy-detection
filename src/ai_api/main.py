@@ -21,10 +21,10 @@ def create_app() -> FastAPI:
     # Add CORS middleware
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],  # Allows all origins
+        allow_origins=["*"], 
         allow_credentials=True,
-        allow_methods=["*"],  # Allows all methods
-        allow_headers=["*"],  # Allows all headers
+        allow_methods=["*"],
+        allow_headers=["*"], 
     )
 
     # Include routes
@@ -32,7 +32,6 @@ def create_app() -> FastAPI:
 
     return app
 
-# Create the application instance
 app = create_app() 
 
 if __name__ == "__main__":

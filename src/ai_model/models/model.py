@@ -7,14 +7,12 @@ class DiabeticRetinopathyModel(nn.Module):
     def __init__(self, config=MODEL_CONFIG):
         super(DiabeticRetinopathyModel, self).__init__()
         
-        # Load base model
         if config["name"] == "efficientnet_b4":
             self.base_model = models.efficientnet_b4(pretrained=config["pretrained"])
             num_features = self.base_model.classifier[1].in_features
         else:
             raise ValueError(f"Unsupported model name: {config['name']}")
         
-        # Replace classifier
         self.base_model.classifier = nn.Sequential(
             nn.Dropout(p=config["dropout_rate"]),
             nn.Linear(num_features, config["hidden_size"]),

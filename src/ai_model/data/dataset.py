@@ -18,12 +18,8 @@ class DiabeticRetinopathyDataset(Dataset):
     def __getitem__(self, idx):
         image_path = self.image_paths[idx]
         label = self.labels[idx]
-        
-        # Read image
         image = Image.open(image_path).convert('RGB')
         image = np.array(image)
-        
-        # Apply transforms
         if self.transforms:
             augmented = self.transforms(image=image)
             image = augmented['image']
@@ -47,26 +43,17 @@ def get_image_paths_and_labels(data_dir):
 
 def create_dataloaders(data_dir, config=TRAIN_CONFIG):
     """Create train and validation dataloaders."""
-    # Get all image paths and labels
     image_paths, labels = get_image_paths_and_labels(data_dir)
-    
-    # Shuffle the data
     indices = np.random.permutation(len(image_paths))
     image_paths = image_paths[indices]
     labels = labels[indices]
-    
-    # Split into train and validation
     split_idx = int(len(image_paths) * DATASET_CONFIG["train_ratio"])
     train_paths = image_paths[:split_idx]
     train_labels = labels[:split_idx]
     val_paths = image_paths[split_idx:]
     val_labels = labels[split_idx:]
-    
-    # Create datasets
     train_dataset = DiabeticRetinopathyDataset(train_paths, train_labels, phase='train')
     val_dataset = DiabeticRetinopathyDataset(val_paths, val_labels, phase='val')
-    
-    # Create dataloaders
     train_loader = DataLoader(
         train_dataset,
         batch_size=config["batch_size"],

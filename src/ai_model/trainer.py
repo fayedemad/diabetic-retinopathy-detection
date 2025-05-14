@@ -13,21 +13,13 @@ class Trainer:
         self.device = torch.device(config["device"])
         self.train_loader = train_loader
         self.val_loader = val_loader
-        
-        # Initialize model
         self.model = get_model(device=self.device)
-        
-        # Initialize loss function
         self.criterion = nn.CrossEntropyLoss(label_smoothing=config["label_smoothing"])
-        
-        # Initialize optimizer
         self.optimizer = optim.AdamW(
             self.model.parameters(),
             lr=config["learning_rate"],
             weight_decay=config["weight_decay"]
         )
-        
-        # Initialize scheduler
         self.scheduler = CosineAnnealingWarmRestarts(
             self.optimizer,
             T_0=SCHEDULER_CONFIG["T_0"],
@@ -97,12 +89,10 @@ class Trainer:
             'val_acc': val_acc
         }
         
-        # Save best model
         if val_acc > self.best_val_acc:
             self.best_val_acc = val_acc
             torch.save(checkpoint, os.path.join(MODEL_DIR, 'best_model.pth'))
         
-        # Save latest model
         torch.save(checkpoint, os.path.join(MODEL_DIR, 'latest_model.pth'))
     
     def train(self):
@@ -110,20 +100,9 @@ class Trainer:
         for epoch in range(self.config["num_epochs"]):
             print(f'\nEpoch {epoch+1}/{self.config["num_epochs"]}')
             
-            # Training phase
             train_loss, train_acc = self.train_epoch()
-            
-            # Validation phase
             val_loss, val_acc = self.validate()
-            
-            # Update learning rate
             self.scheduler.step()
-            
-            # Print metrics
             print(f'Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.2f}%')
             print(f'Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%')
-            
-            # Save checkpoint
             self.save_checkpoint(epoch, val_acc)
-            
-            # Early stopping could be implemented here if needed 
