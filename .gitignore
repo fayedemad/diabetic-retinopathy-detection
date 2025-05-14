@@ -1,0 +1,7 @@
+./venv
+./__pycache__
+./data/**
+./logs/**
+./logs/
+./data/
+./data/samples/**
