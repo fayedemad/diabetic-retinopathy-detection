@@ -21,17 +21,12 @@ async def validate_upload(file: UploadFile) -> Image.Image:
         HTTPException: If validation fails
     """
     try:
-        # Read file content
         content = await file.read()
-        
-        # Validate upload
         validator = ImageUploadValidator(
             content=content,
             filename=file.filename,
             content_type=file.content_type
         )
-        
-        # Convert to PIL Image
         image = Image.open(io.BytesIO(content))
         
         return image
@@ -54,12 +49,8 @@ async def predict_endpoint(file: UploadFile = File(...)):
         PredictionResponse containing stage, confidence, and probabilities
     """
     try:
-        # Validate and get image
         image = await validate_upload(file)
-        
-        # Get prediction
         result = predict(image)
-        
         return PredictionResponse(**result)
         
     except HTTPException:

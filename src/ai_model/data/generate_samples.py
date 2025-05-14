@@ -9,14 +9,10 @@ def create_retinal_background(size=(380, 380)):
     """Create a synthetic retinal background with blood vessels."""
     background = np.zeros((size[0], size[1], 3), dtype=np.uint8)
     background[:, :] = [random.randint(180, 220), random.randint(180, 220), random.randint(150, 180)]
-    
-    # optic disc (bright circular area)
     center = (random.randint(size[0]//4, 3*size[0]//4), 
              random.randint(size[1]//4, 3*size[1]//4))
     radius = random.randint(20, 30)
     cv2.circle(background, center, radius, (255, 255, 255), -1)
-    
-    # blood vessels (more realistic pattern)
     for _ in range(30):
         start_point = (
             center[0] + random.randint(-radius, radius),
@@ -27,7 +23,6 @@ def create_retinal_background(size=(380, 380)):
             random.randint(0, size[1])
         )
         thickness = random.randint(1, 3)
-        # Dark red color for vessels
         color = (random.randint(0, 30), random.randint(0, 30), random.randint(0, 30))
         cv2.line(background, start_point, end_point, color, thickness)
     
@@ -79,7 +74,7 @@ def add_lesions(image, severity):
             x = random.randint(0, image.shape[1]-1)
             y = random.randint(0, image.shape[0]-1)
             radius = random.randint(10, 20)
-            # Create irregular dark area
+            # irregular dark area
             points = []
             for i in range(12):
                 angle = i * np.pi / 6
