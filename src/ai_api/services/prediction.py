@@ -15,19 +15,23 @@ DR_STAGES = {
 }
 
 def get_model_instance():
-    """Get model instance for prediction."""
     model = get_model()
     model_path = Path(__file__).parent.parent.parent / "models" / "best_model.pth"
-    
-    if not model_path.exists():
+    checkpoint = get_checkpoint(path=model_path)
+    model.load_state_dict(checkpoint['model_state_dict'])
+    model.eval()
+    return model
+
+def get_checkpoint(path: Path):
+    """Get model instance for prediction."""
+    if not path.exists():
         raise HTTPException(
             status_code=500,
             detail="Model file not found. Please ensure the model is trained and saved."
         )
-    checkpoint = torch.load(model_path, map_location=torch.device('cpu'))
-    model.load_state_dict(checkpoint['model_state_dict'])
-    model.eval()
-    return model
+    checkpoint = torch.load(path, map_location=torch.device('cpu'))
+    return checkpoint
+
 
 def predict(image: Image.Image) -> dict:
     """

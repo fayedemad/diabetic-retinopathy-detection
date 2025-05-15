@@ -1,9 +1,10 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from ai_api.routes.models import PredictionResponse, APIInfo
 from ai_api.validators.models import ImageUploadValidator
-from ai_api.services.prediction import predict
+from ai_api.services.prediction import predict, get_checkpoint
 from PIL import Image
 import io
+from pathlib import Path
 
 router = APIRouter()
 
@@ -60,6 +61,10 @@ async def predict_endpoint(file: UploadFile = File(...)):
             status_code=500,
             detail=f"Error processing request: {str(e)}"
         )
+
+@router.get("/accuracy")
+async def _get_model_accuracy():
+    return {"model_accuracy": get_checkpoint(Path(__file__).parent.parent.parent / "models" / "best_model.pth")["val_acc"]}
 
 @router.get("/", response_model=APIInfo)
 async def get_info():
