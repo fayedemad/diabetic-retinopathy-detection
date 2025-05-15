@@ -3,6 +3,7 @@ from PIL import Image
 import io
 
 class ImageUploadValidator(BaseModel):
+    """Validator for image upload requests."""
     content: bytes
     filename: str
     content_type: str
@@ -15,7 +16,7 @@ class ImageUploadValidator(BaseModel):
     
     @validator('content')
     def validate_content(cls, v):
-        if len(v) > 10 * 1024 * 1024:
+        if len(v) > 10 * 1024 * 1024:  # 10MB
             raise ValueError('File size must be less than 10MB')
         
         try:
