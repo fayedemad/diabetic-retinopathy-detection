@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Dict, Any
 
+# sOMething
 class PredictionResponse(BaseModel):
     """Response model for prediction endpoint."""
     stage: int = Field(..., description="Predicted DR stage (0-4)")
