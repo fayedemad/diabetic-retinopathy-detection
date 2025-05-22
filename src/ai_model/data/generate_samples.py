@@ -56,7 +56,7 @@ def add_lesions(image, severity):
                 ))
             points = np.array(points, np.int32)
             cv2.fillPoly(image, [points], (0, 0, 255))
-    
+    # asd
     # exudates (yellow-white spots with soft edges)
     if severity >= 3:
         for _ in range(random.randint(5, 10)):
